@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Registration</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .confirmation-box {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 500px;
+            margin: auto;
+            padding: 30px 25px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .confirmation-box h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .confirmation-box p {
+            margin: 10px 0;
+            color: #555;
+        }
+        .confirmation-box strong {
+            color: #000;
+        }
+        form {
+            margin-top: 20px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 10px 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        button[name="choice"][value="yes"] {
+            background-color: #4CAF50;
+            color: white;
+        }
+        button[name="choice"][value="no"] {
+            background-color: #f44336;
+            color: white;
+        }
+        button:hover {
+            filter: brightness(90%);
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-box">
+        <h2>Confirm Registration</h2>
+        <p>Do you want to register for <strong>{{ event.name }}</strong>?</p>
+        <p>Date: {{ event.date }} at {{ event.time }}</p>
+        <p>Location: {{ event.location }}</p>
+        
+        <form method="POST" action="{{ url_for('register_for_event', event_id=event['_id']) }}">
+            <button type="submit" name="choice" value="yes">Yes, Register Me</button>
+            <button type="submit" name="choice" value="no">No, Cancel</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registrations</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .event-info {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            max-width: 700px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .event-info h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .event-info p {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        table.registrations-table {
+            width: 100%;
+            max-width: 700px;
+            border-collapse: collapse;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .registrations-table th, .registrations-table td {
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        .registrations-table th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: 600;
+        }
+
+        .registrations-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .registrations-table tr:hover {
+            background-color: #eef6f0;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #45a049;
+        }
+
+        p.no-registrations {
+            color: #777;
+            font-style: italic;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="event-info">
+        <h2>{{ event.name }}</h2>
+        <p><strong>Date:</strong> {{ event.date }}</p>
+        <p><strong>Time:</strong> {{ event.time }}</p>
+        <p><strong>Location:</strong> {{ event.location }}</p>
+        <p><strong>Total Registrations:</strong> {{ event.registered_users|length }}/{{ event.max_registrations }}</p>
+    </div>
+
+    <h3>Registered Users</h3>
+    {% if registered_users %}
+        <table class="registrations-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>College ID</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in registered_users %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.college_id }}</td>
+                    <td>{{ user.role }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-registrations">No users have registered for this event yet.</p>
+    {% endif %}
+
+    <a href="{{ url_for('view_events') }}" class="back-button">Back to Events</a>
+</body>
+</html>

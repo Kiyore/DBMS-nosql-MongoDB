@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to right, #f4f6f8, #e8ebf0);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .event-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 800px;
+            transition: transform 0.2s ease;
+        }
+        .event-card:hover {
+            transform: translateY(-3px);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #388e3c;
+        }
+        .admin-btn {
+            background-color: #9c27b0;
+        }
+        .admin-btn:hover {
+            background-color: #7b1fa2;
+        }
+        .view-btn {
+            background-color: #2196F3;
+        }
+        .view-btn:hover {
+            background-color: #1976d2;
+        }
+        .flash-messages {
+            margin: 20px auto;
+            max-width: 700px;
+        }
+        .flash-messages li {
+            padding: 12px;
+            margin: 8px 0;
+            background-color: #fdecea;
+            border: 1px solid #f5c6cb;
+            border-left: 5px solid #f44336;
+            border-radius: 6px;
+            color: #721c24;
+            list-style-type: none;
+        }
+        .contact-container {
+            margin-top: 10px;
+            padding: 12px;
+            background-color: #f1f1f1;
+            border-radius: 6px;
+            display: none;
+        }
+        input[type="text"] {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: auto;
+        }
+        a button {
+            text-decoration: none;
+        }
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Events</h1>
+
+    <!-- Flash messages -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    {% if is_organizer %}
+        <div style="text-align: center;">
+            <a href="{{ url_for('add_event') }}">
+                <button style="background-color: #ff9800;">Add Event</button>
+            </a>
+        </div>
+    {% endif %}
+
+    <div>
+        {% for event in events %}
+            <div class="event-card">
+                <h2>{{ event.name }}</h2>
+                <p><strong>Organizer:</strong> {{ event.organizer_name }}</p>
+                <p><strong>Date:</strong> {{ event.date }}</p>
+                <p><strong>Time:</strong> {{ event.time }}</p>
+                <p><strong>Location:</strong> {{ event.location }}</p>
+                <p><strong>Description:</strong> {{ event.description }}</p>
+                <p><strong>Max Registrations:</strong> {{ event.max_registrations }}</p>
+                <p><strong>Registered Users:</strong> {{ event.registered_users | length }}</p>
+
+                {% if not is_organizer and not is_admin %}
+                    {% if college_id in event.registered_users %}
+                        <p style="color: green;">✅ Already Registered</p>
+                    {% elif event.registered_users | length >= event.max_registrations %}
+                        <p style="color: red;">❌ Registration Full</p>
+                    {% else %}
+                        <form method="GET" action="{{ url_for('confirm_registration', event_id=event['_id']) }}">
+                            <button type="submit">Register</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+                
+                {% if is_organizer and event.is_my_event %}
+                    <a href="{{ url_for('view_event_registrations', event_id=event['_id']) }}">
+                        <button class="view-btn">View Registrations</button>
+                    </a>
+                {% endif %}
+
+                {% if is_admin and not event.is_my_event %}
+                    <button onclick="toggleContact('{{ event.organizer_id }}')" class="admin-btn">Contact Organizer</button>
+                    <div id="contact-{{ event.organizer_id }}" class="contact-container">
+                        <input type="text" id="email-{{ event.organizer_id }}" 
+                               value="{{ event.organizer_email }}" readonly>
+                        <button onclick="copyToClipboard('{{ event.organizer_id }}')">Copy</button>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function toggleContact(organizerId) {
+            const contactDiv = document.getElementById(`contact-${organizerId}`);
+            contactDiv.style.display = contactDiv.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function copyToClipboard(organizerId) {
+            const emailInput = document.getElementById(`email-${organizerId}`);
+            emailInput.select();
+            emailInput.setSelectionRange(0, 99999); // For mobile
+            document.execCommand('copy');
+            alert('Copied: ' + emailInput.value);
+        }
+    </script>
+</body>
+</html>
